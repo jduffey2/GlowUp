@@ -52,11 +52,15 @@ public class LightGroup implements Serializable{
     }
 
     public void removeElement(SequenceElement element) {
-        pattern.remove(element);
+        if(pattern.contains(element)) {
+            pattern.remove(element);
+        }
     }
 
     public void removeElement(int index) {
-        pattern.remove(index);
+        if(index < pattern.size()) {
+            pattern.remove(index);
+        }
     }
 
     public ArrayList<SequenceElement> getPattern() {
