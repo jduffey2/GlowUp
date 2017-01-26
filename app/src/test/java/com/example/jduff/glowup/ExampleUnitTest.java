@@ -1,4 +1,4 @@
-package org.onucs.glowup.glowup;
+package com.example.jduff.glowup;
 
 import org.junit.Test;
 

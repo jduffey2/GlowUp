@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">GlowUp</string>
+    <string name="title_activity_element_selection_activity">Element_selection_activity</string>
+    <string name="color_choice">Color</string>
+    <string name="time_choice">Time</string>
+    <string name="color_confirm_txt">Select</string>
+    <string name="time_default_text">1</string>
+    <string name="val_choice">Brightness</string>
+    <string name="sat_choice">Saturation</string>
+    <string name="hue_choice">Hue</string>
+    <string name="add_color">Add</string>
+    <string name="outer">Outer Ring</string>
+    <string name="middle">Middle Ring</string>
+    <string name="inner">Inner Ring</string>
+    <string name="action_settings">Settings</string>
+    <string name="ringConfirmation">Done</string>
+    <string name="delete_text">Delete</string>
+    <string name="sendLbl">Upload</string>
+    <string name="addElementLabel">Add +</string>
 </resources>
