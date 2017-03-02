@@ -29,7 +29,7 @@ public class LightGroup implements Serializable{
     }
 
     public String toJSON() {
-        String str = "{'ringID':" + ringID.ordinal() + ",'pattern':[";
+        String str = "{" + ringID.ordinal() + ",[";
         for (SequenceElement element: pattern) {
             str += element.toJSON() + ",";
         }

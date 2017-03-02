@@ -79,7 +79,7 @@ public class SequenceElement implements Serializable{
         return (String.format("%02x", redComponent) + String.format("%02x", greenComponent) + String.format("%02x", blueComponent)).toUpperCase();
     }
     public String toJSON() {
-        String str = "{'ID':" + indexID + ",'length':" + length + ",'red':" + redComponent + ",'green':" + greenComponent + ",'blue':" + blueComponent + "}";
+        String str = "{" + redComponent + "," + greenComponent + "," + blueComponent  + "," + length + "}";
         return str;
     }
 

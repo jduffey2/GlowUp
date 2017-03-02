@@ -40,7 +40,7 @@ public class Base implements Serializable{
     }
 
     public String toJSON() {
-        String str = "{'rings':[";
+        String str = "{[";
 
         for (LightGroup group: circuit) {
             str += group.toJSON() + ",";
