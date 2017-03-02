@@ -11,8 +11,8 @@ import java.util.ArrayList;
 /**
  * LightGroup - Represents an LED or LED group that can have a sequence programmed independently from
  *      the other groups, stores the array of sequence elements
- * Author: Jason Duffey
- * Date: 10/2016
+ * @author Jason Duffey
+ * @version 1.0 - 10/2016
  */
 
 public class LightGroup implements Serializable{
@@ -24,12 +24,13 @@ public class LightGroup implements Serializable{
         ringID = ring;
     }
 
-    public LightGroup(String jsonString) {
-        fromJSON(jsonString);
-    }
-
+    /**
+     * toJSON - convert the LightGroup object into a JSON-like string
+     * @return - a JSON-like String of the LightGroup data
+     */
     public String toJSON() {
         String str = "{" + ringID.ordinal() + ",[";
+        //iterate through each element of the LightGroup calling the Element toJSON method
         for (SequenceElement element: pattern) {
             str += element.toJSON() + ",";
         }
@@ -41,36 +42,56 @@ public class LightGroup implements Serializable{
         return str;
     }
 
-    //TODO: implement this
-    private void fromJSON(String jsonString) {
-
-
-    }
-
+    /**
+     * addElement - add a new SequenceElement to the LightGroup
+     * @param element - the SequenceElement to add to the LightGroup
+     */
     public void addElement(SequenceElement element) {
         pattern.add(element);
     }
 
+    /**
+     * removeElement - remove a SequenceElement based on the element passed in
+     * @param element - the element to remove from the LightGroup
+     */
     public void removeElement(SequenceElement element) {
         if(pattern.contains(element)) {
             pattern.remove(element);
         }
     }
 
+    /**
+     * removeElement - remove a SequenceElement based on its index in the pattern
+     * @param index - the index of the SequenceElement to remove
+     */
     public void removeElement(int index) {
         if(index < pattern.size()) {
             pattern.remove(index);
         }
     }
 
+    /**
+     * getPattern - a getter for the ArrayList of the SequenceElements
+     * @return - the ArrayList containing the SequenceElements in the pattern
+     */
     public ArrayList<SequenceElement> getPattern() {
         return pattern;
     }
 
+    /**
+     * getElement - get a SequenceElement based on a passed index
+     * @param index - the index of the SequenceElement to return
+     * @return - the SequenceElement at the specified index
+     */
     public SequenceElement getElement(int index) {
         return pattern.get(index);
     }
 
+    /**
+     * updateElement - update a SequenceElement with a new Element
+     * @param index - the index of the Element to replace
+     * @param element - the SequenceElement to replace the old one
+     */
     public void  updateElement(int index, SequenceElement element) {
         if(index >= pattern.size()) {
             pattern.add(index, element);

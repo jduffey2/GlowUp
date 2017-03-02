@@ -13,14 +13,17 @@ import android.view.View;
 
 import java.util.Set;
 
+/**
+ * Ring_selection_activity - the main activity that allows a user to select a ring to modify
+ * @author Jason Duffey
+ * @version 1.0 - 01/2017
+ */
 public class Ring_selection_activity extends AppCompatActivity {
 
     private Base lightBase;
     private BluetoothAdapter bta;
     public final static String BASE = "com.example.jduff.glowup.BASE";
     public final static String RING = "com.example.jduff.glowup.RING";
-    public final static int REQUEST_ENABLE_BT = 1;
-    private MyReceiver mReceiver;
 
 
     @Override
@@ -28,12 +31,15 @@ public class Ring_selection_activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ring_selection_activity);
 
-
+        //Get the Base that is passed from the previous activity
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
+
+        //Check to see if anything has been passed
         if(extras != null && extras.containsKey(BASE)) {
             lightBase = (Base)intent.getSerializableExtra(BASE);
         }
+        //If not create a new base and add three rings to it
         else {
             lightBase = new Base();
             LightGroup outer = new LightGroup(BaseRingEnum.OUTER);
@@ -43,16 +49,11 @@ public class Ring_selection_activity extends AppCompatActivity {
             lightBase.addGroup(mid);
             lightBase.addGroup(inner);
         }
-            pairDevice();
     }
 
-    @Override
-    protected void onDestroy() {
-        unregisterReceiver(mReceiver);
-        super.onDestroy();
-        // Don't forget to unregister the ACTION_FOUND receiver.
-    }
-
+    /****************************************************************************************/
+    // These methods are the event handlers for the buttons for editing a ring
+    /****************************************************************************************/
     public void selectRingOuter(View view) {
         openLightGroupActivity(BaseRingEnum.OUTER);
     }
@@ -65,6 +66,9 @@ public class Ring_selection_activity extends AppCompatActivity {
         openLightGroupActivity(BaseRingEnum.INNER);
     }
 
+    /*****************************************************************************************/
+
+    //Start the Element_selection activity with the selected ring
     private void openLightGroupActivity(BaseRingEnum ring) {
         Intent intent = new Intent(this, Element_selection.class);
         intent.putExtra(BASE, lightBase);
@@ -72,45 +76,9 @@ public class Ring_selection_activity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //Send the data to the base
     public void uploadData(View view) {
         Log.d("TEST",lightBase.toJSON());
     }
 
-    public void pairDevice() {
-
-        mReceiver = new MyReceiver();
-
-        if(bta == null) {
-            bta = BluetoothAdapter.getDefaultAdapter();
-            if(bta == null) {
-                Log.d("Bluetooth Incompatible", "Device does not support Bluetooth");
-                return;
-            }
-
-            if(!bta.isEnabled()) {
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            }
-
-            //Discovering Devices
-            Set<BluetoothDevice> pairedDevices = bta.getBondedDevices();
-
-            if(pairedDevices.size() > 0) {
-                for (BluetoothDevice device : pairedDevices) {
-                    String deviceName = device.getName();
-                    String deviceHardwareAddress = device.getAddress();
-
-                    Log.d("Device",deviceName + ":" + deviceHardwareAddress);
-                }
-            }
-//            IntentFilter filter = new IntentFilter();
-//            filter.addAction(BluetoothDevice.ACTION_FOUND);
-//            filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-//            filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-//
-//            registerReceiver(mReceiver, filter);
-//            bta.startDiscovery();
-
-        }
-    }
 }

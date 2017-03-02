@@ -11,6 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
 
+/**
+ * Element_selection - the activity that displays the contents of a ring and allows to select a specific element of the ring
+ * @author Jason Duffey
+ * @version 1.0 - 01/2017
+ */
 public class Element_selection extends AppCompatActivity {
     public final static String BASE = "com.example.jduff.glowup.BASE";
     public final static String RING = "com.example.jduff.glowup.RING";
@@ -23,6 +28,8 @@ public class Element_selection extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_element_selection);
+
+        //Receive the Base Object and BaseRingEnum passed from the previous activity
         Intent i = getIntent();
         lightBase = (Base)i.getSerializableExtra(Ring_selection_activity.BASE);
         ring = (BaseRingEnum)i.getSerializableExtra(Ring_selection_activity.RING);
@@ -50,36 +57,31 @@ public class Element_selection extends AppCompatActivity {
 
         LinearLayout parentLayout = (LinearLayout)findViewById(R.id.lightGroupParentLayout);
 
+        //Iterate through each element in the ring
         for (SequenceElement element: group.getPattern()) {
             LinearLayout frame = new LinearLayout(this);
 
+            //Create a new button in a linearlayout that has the time displayed in it
             Button btn = new Button(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
             params.setMargins(0, 10,0, 10);
             btn.setLayoutParams(params);
             frame.addView(btn);
             setOnClick(btn, group.getPattern().indexOf(element));
-            btn.setText("" + (element.getLength() / 1000.0));
+            btn.setText("" + (element.getLength() / 1000.0) + "sec");
 
             //Set the text color based on the brightness of the background color
             float[] bgColor = new float[3];
             Color.RGBToHSV(element.getRedComponent(), element.getGreenComponent(), element.getBlueComponent(), bgColor);
+            //If the value of the color is less than 1/2 use white instead of black because it is a dark color
             if(bgColor[2] < 0.5) {
                 btn.setTextColor(Color.WHITE);
             }
             btn.setBackgroundColor(Color.argb(255,element.getRedComponent(), element.getGreenComponent(), element.getBlueComponent()));
 
-
-
+            //Add the LinearLayout with the button to the frame
             parentLayout.addView(frame);
         }
-//        //Add a Frame for adding a new element to the pattern
-//        LinearLayout frame = new LinearLayout(this);
-//        Button btn = new Button(this);
-//        btn.setText("Add +");
-//        setOnClick(btn, -1);
-//        frame.addView(btn);
-//        parentLayout.addView(frame);
     }
 
     private void setOnClick(final Button btn, final int elementNo) {
@@ -91,6 +93,10 @@ public class Element_selection extends AppCompatActivity {
         });
     }
 
+    /**
+     * returnToBase - Start the Ring_selection_activity
+     * @param view - the ButtonView that triggered the event
+     */
     public void returnToBase(View view) {
         Intent intent = new Intent(this, Ring_selection_activity.class);
         intent.putExtra(BASE, lightBase);
@@ -101,6 +107,10 @@ public class Element_selection extends AppCompatActivity {
         openConfig(-1);
     }
 
+    /**
+     * openConfig - start the Element_config activity to change the color of the elemetn
+     * @param elementNo - the index of the element to change (-1 if it is a new element)
+     */
     public void openConfig(int elementNo) {
         //Open the Element Selection Activity from here
         Intent intent = new Intent(Element_selection.this, Element_config.class);

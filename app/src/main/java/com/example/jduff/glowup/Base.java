@@ -12,36 +12,51 @@ import java.util.ArrayList;
  * Base.java - A class for storing all the data for a pattern of lights to be sent to the base
  *      It will contain all the different lights and lengths for the entire pattern, can be saved to the
  *      device or sent to the base
- * Author: Jason Duffey
- * Date: 11/2016
+ * @author Jason Duffey
+ * @version 1.0 - 11/2016
  */
 
 public class Base implements Serializable{
     private ArrayList<LightGroup> circuit; //Store the different Light Groups that can have different patterns
 
+
     public Base() {
         circuit = new ArrayList<>();
     }
 
-    public Base(String jsonString) {
-        fromJSON(jsonString);
-    }
-
+    /**
+     * addGroup - Add a LightGroup to the Base, to be used if different sized bases are used
+     * @param group - a LightGroup object to be added to the base
+     */
     public void addGroup(LightGroup group) {
         circuit.add(group);
     }
+
+    /**
+     * removeGroup - removes a LightGroup from the base
+     * @param group - the LightGroup object that should be removed from the ArrayList of LightGroups in the base
+     */
     public void removeGroup(LightGroup group) {
         circuit.remove(group);
     }
 
+
+    /**
+     * send - send the new pattern data to the Base via bluetooth
+     */
     //TODO: Implement this. This should use the android bluetooth library to send the pattern instructions to the base
     public void send() {
         String data = toJSON();
     }
 
+    /**
+     * toJSON - converts the pattern data into a JSON-like structured string
+     * @return - a JSON-like string containing an array of the different LightGroup data
+     */
     public String toJSON() {
         String str = "{[";
 
+        //Iterate through the LightGroups in the circuit and call their toJSON methods
         for (LightGroup group: circuit) {
             str += group.toJSON() + ",";
         }
@@ -50,32 +65,46 @@ public class Base implements Serializable{
         return str;
     }
 
-    //TODO: Implement this after determining how this will be stored in memory
-    private void fromJSON(String jsonString) {
 
-    }
-
+    /**
+     * save - save the current patter to the device
+     */
     //TODO: Implement this, to save this class data to the device
     public void save() {
     }
 
+    /**
+     * getGroup - get the LightGroup object at a certain index in the ArrayList
+     * @param index - the index of the LightGroup to retrieve from the ArrayList
+     * @return - the LightGroup object at the selected index
+     */
     public LightGroup getGroup(int index) {
         return circuit.get(index);
     }
 
+    /**
+     * getGroup - get the LightGroup object that is indexed based on the BaseRingEnum value
+     * @param index - the BaseRingEnum value of the LightGroup to retrieve
+     * @return - the LightGroup object with the BaseRingEnum
+     */
     public LightGroup getGroup(BaseRingEnum index) {
         switch (index) {
             case OUTER:
-                return circuit.get(0);
+                return circuit.get(0); //The Outer ring is at index 0
             case MIDDLE:
-                return circuit.get(1);
+                return circuit.get(1); //The middle ring is at index 1
             case INNER:
-                return circuit.get(2);
+                return circuit.get(2); //The innder ring is at index 2
             default:
                 return null;
         }
     }
 
+    /**\
+     * updateGroup - update a LightGroup with a new object that has new information
+     * @param ring - the BaseRingEnum of the LightGroup that should be updated
+     * @param group - a LightGroup object that is going to replace the current LightGroup at the selected index
+     */
     public void updateGroup(BaseRingEnum ring, LightGroup group) {
         switch (ring) {
             case OUTER:
@@ -88,6 +117,7 @@ public class Base implements Serializable{
                 circuit.set(2, group);
                 break;
             default:
+                //Log an error if a correct Enum is not passed
                 Log.e("BaseRingEnum Error","Could not update the light Group");
         }
     }

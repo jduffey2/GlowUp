@@ -8,6 +8,11 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+/**
+ * Element_config - the application activity code for the activity that allows changing the color and time of an element
+ * @author Jason Duffey
+ * @version 1.0 - 01/2017
+ */
 public class Element_config extends AppCompatActivity {
 
     private Base lightBase;
@@ -20,11 +25,13 @@ public class Element_config extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_element_config);
 
+        //Get the Base object, BaseRingEnum, and Element Index that is passed by the Element Selection Activity
         Intent i = getIntent();
         lightBase = (Base)i.getSerializableExtra(Element_selection.BASE);
         ring = (BaseRingEnum)i.getSerializableExtra(Element_selection.RING);
         index = i.getIntExtra(Element_selection.ELEMENT, -1);
 
+        //If the index passed in > 0 then the element already exists, if not then it is a new element that needs to be created
         if(index >= 0) {
             element = lightBase.getGroup(ring).getElement(index);
         }
@@ -79,6 +86,7 @@ public class Element_config extends AppCompatActivity {
             }
         });
 
+        //Set the seekbar to change the Hue when it is changed
         hue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -94,6 +102,7 @@ public class Element_config extends AppCompatActivity {
             }
         });
 
+        //Set the seekbar to change the Saturation when it is changed
         sat.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -109,6 +118,7 @@ public class Element_config extends AppCompatActivity {
             }
         });
 
+        //Set the seekbar to change the Value when it is changed
         val.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -125,6 +135,9 @@ public class Element_config extends AppCompatActivity {
         });
     }
 
+    /**
+     * changeColor - get the HSV values from the three seekbars and update the object colors preview
+     */
     private void changeColor() {
         //Get the current values of the three sliders
         int hue = ((SeekBar)findViewById(R.id.hue_choiceSkbr)).getProgress();
@@ -143,19 +156,27 @@ public class Element_config extends AppCompatActivity {
         element.setComponents(Color.red(choice),Color.green(choice),Color.blue(choice));
     }
 
+    /**
+     * colorChoiceReturn - Start the Element_selection activity after a color selection has been made
+     * @param view - The ButtonView that triggered the event
+     */
     public void colorChoiceReturn(View view) {
         //Update the lightBase
         LightGroup group = lightBase.getGroup(ring);
         group.updateElement(index, element);
         lightBase.updateGroup(ring, group);
 
-        //Return to the color selection activity
+        //Start to the color selection activity
         Intent intent = new Intent(this, Element_selection.class);
         intent.putExtra(Ring_selection_activity.BASE, lightBase);
         intent.putExtra(Ring_selection_activity.RING, ring);
         startActivity(intent);
     }
 
+    /**
+     * deleteElement - Delete the selected element and start the Element_selection activity
+     * @param view - The ButtonView that triggered the event
+     */
     public void deleteElement(View view) {
         //Update the lightBase
         LightGroup group = lightBase.getGroup(ring);
