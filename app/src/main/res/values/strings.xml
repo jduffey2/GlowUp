@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GlowUp</string>
+    <string name="app_name">NeoBase</string>
     <string name="title_activity_element_selection_activity">Element_selection_activity</string>
     <string name="color_choice">Color</string>
     <string name="time_choice">Time</string>
