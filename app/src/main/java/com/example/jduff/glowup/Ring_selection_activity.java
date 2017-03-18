@@ -1,20 +1,13 @@
 package com.example.jduff.glowup;
 
 import android.app.AlertDialog;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.content.BroadcastReceiver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -23,8 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.util.Set;
 
 /**
  * Ring_selection_activity - the main activity that allows a user to select a ring to modify
@@ -51,17 +42,13 @@ public class Ring_selection_activity extends AppCompatActivity {
         //Check to see if anything has been passed
         if(extras != null && extras.containsKey(BASE)) {
             lightBase = (Base)intent.getSerializableExtra(BASE);
+            ((TextView)findViewById(R.id.nameLbl)).setText(lightBase.getPatternName());
         }
         //If not create a new base and add three rings to it
         else {
-            lightBase = new Base();
-            LightGroup outer = new LightGroup(BaseRingEnum.OUTER);
-            LightGroup mid = new LightGroup(BaseRingEnum.MIDDLE);
-            LightGroup inner = new LightGroup(BaseRingEnum.INNER);
-            lightBase.addGroup(outer);
-            lightBase.addGroup(mid);
-            lightBase.addGroup(inner);
+            newBase();
         }
+
     }
 
     @Override
@@ -74,14 +61,20 @@ public class Ring_selection_activity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
-            case R.id.saveMenu:
-                saveDialog();
-                return true;
             case R.id.openMenu:
                 openDialog();
                 return true;
             case R.id.deleteMenu:
                 deleteDialog();
+                return true;
+            case R.id.newMenu:
+                newDialog();
+                return true;
+            case R.id.saveAs:
+                saveDialog();
+                return true;
+            case R.id.saveCurrent:
+                reSave();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -131,7 +124,8 @@ public class Ring_selection_activity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 m_text = input.getText().toString();
-                ((TextView)findViewById(R.id.nameLbl)).setText(m_text);
+                lightBase.setPatternName(m_text);
+                ((TextView)findViewById(R.id.nameLbl)).setText(lightBase.getPatternName());
                 save();
             }
         });
@@ -143,6 +137,41 @@ public class Ring_selection_activity extends AppCompatActivity {
         });
 
         builder.show();
+    }
+
+    private void reSave() {
+        if(lightBase.getPatternID() != -1) {
+            PatternDBHelper helper = new PatternDBHelper(this.getBaseContext());
+            SQLiteDatabase db = helper.getReadableDatabase();
+            long ID = lightBase.getPatternID();
+
+            //Delete from the Element Table
+            String selection = PatternDBContract.ElementTable.COLUMN_PATTERN_ID + " LIKE ?";
+            String[] selectionArgs = { Long.toString(lightBase.getPatternID())};
+
+            db.delete(PatternDBContract.ElementTable.TABLE_NAME,selection,selectionArgs);
+
+            for(int i = 0; i < 3; i++) {
+                LightGroup group = lightBase.getGroup(i);
+                int j = 0;
+                for (SequenceElement element: group.getPattern() ) {
+                    ContentValues val = new ContentValues();
+                    val.put(PatternDBContract.ElementTable.COLUMN_PATTERN_ID, ID);
+                    val.put(PatternDBContract.ElementTable.COLUMN_INDEX_ID, j);
+                    val.put(PatternDBContract.ElementTable.COLUMN_RING_ID, i);
+                    val.put(PatternDBContract.ElementTable.COLUMN_RED, element.getRedComponent());
+                    val.put(PatternDBContract.ElementTable.COLUMN_GREEN, element.getGreenComponent());
+                    val.put(PatternDBContract.ElementTable.COLUMN_BLUE, element.getBlueComponent());
+                    val.put(PatternDBContract.ElementTable.COLUMN_LENGTH, element.getLength());
+
+                    long rowID = db.insert(PatternDBContract.ElementTable.TABLE_NAME, null, val);
+                    j++;
+                }
+            }
+
+            helper.close();
+            db.close();
+        }
     }
 
     private void save() {
@@ -197,11 +226,11 @@ public class Ring_selection_activity extends AppCompatActivity {
                 null);       //SORT
 
         final CharSequence[] items = new CharSequence[cursor.getCount()];
-        final int[] patternID = new int[cursor.getCount()];
+        final long[] patternID = new long[cursor.getCount()];
         int i = 0;
         while(cursor.moveToNext()) {
             items[i] = cursor.getString(1);
-            patternID[i] = cursor.getInt(0);
+            patternID[i] = cursor.getLong(0);
             i++;
         }
         cursor.close();
@@ -211,7 +240,8 @@ public class Ring_selection_activity extends AppCompatActivity {
         builder.setTitle("Select Pattern").setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                open(patternID[which]);
+                open(patternID[which],  items[which]);
+
                 ((TextView)findViewById(R.id.nameLbl)).setText(items[which]);
             }
         });
@@ -221,7 +251,7 @@ public class Ring_selection_activity extends AppCompatActivity {
         builder.show();
     }
 
-    private void open(int pattern) {
+    private void open(long pattern, CharSequence name) {
         PatternDBHelper helper = new PatternDBHelper(this.getBaseContext());
         SQLiteDatabase db = helper.getReadableDatabase();
         String[] elementProj = {
@@ -235,7 +265,7 @@ public class Ring_selection_activity extends AppCompatActivity {
         };
         
         String selection = PatternDBContract.ElementTable.COLUMN_PATTERN_ID + " = ?";
-        String[] selectionArgs = {Integer.toString(pattern)};
+        String[] selectionArgs = {Long.toString(pattern)};
 
         Cursor cursor = db.query(PatternDBContract.ElementTable.TABLE_NAME, //Table
                 elementProj, //Columns
@@ -245,14 +275,36 @@ public class Ring_selection_activity extends AppCompatActivity {
                 null,        //FILTER
                 null);       //SORT
 
+        lightBase = new Base();
+        LightGroup outer = new LightGroup(BaseRingEnum.OUTER);
+        LightGroup mid = new LightGroup(BaseRingEnum.MIDDLE);
+        LightGroup inner = new LightGroup(BaseRingEnum.INNER);
+
+        lightBase.setPatternName((String)name);
+        ((TextView)findViewById(R.id.nameLbl)).setText(name);
+        lightBase.setPatternID(pattern);
+
         while( cursor.moveToNext()) {
             int col = cursor.getColumnCount();
-            Log.d("Element", "NEW ELEMENT");
+            SequenceElement elem = new SequenceElement(cursor.getInt(4), cursor.getInt(5), cursor.getInt(6), cursor.getInt(3), cursor.getInt(2));
 
-            for (int i = 0; i < col; i++) {
-                Log.d("Element", cursor.getColumnName(i) + ", " + cursor.getInt(i));
+            switch (cursor.getInt(1)) {
+                case 0:
+                    outer.addElement(elem);
+                    break;
+                case 1:
+                    mid.addElement(elem);
+                    break;
+                case 2:
+                    inner.addElement(elem);
+                    break;
             }
         }
+
+        lightBase.addGroup(outer);
+        lightBase.addGroup(mid);
+        lightBase.addGroup(inner);
+
 
         helper.close();
         db.close();
@@ -297,7 +349,7 @@ public class Ring_selection_activity extends AppCompatActivity {
             db.delete(PatternDBContract.ElementTable.TABLE_NAME,selection,selectionArgs);
 
             //Delete from the Pattern Table
-            String pSel = PatternDBContract.PatternsTable._ID;
+            String pSel = PatternDBContract.PatternsTable._ID + " LIKE ?";
             String[] pSelArgs = { Long.toString(lightBase.getPatternID())};
 
             db.delete(PatternDBContract.PatternsTable.TABLE_NAME, pSel, pSelArgs);
@@ -307,6 +359,30 @@ public class Ring_selection_activity extends AppCompatActivity {
         }
 
         //Get a new Base Object and reset everything
+        newBase();
+    }
+
+    private void newDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("New Pattern").setMessage("Open New Pattern. WARNING: Unsaved changes will be lost");
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                newBase();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void newBase() {
         lightBase = new Base();
         LightGroup outer = new LightGroup(BaseRingEnum.OUTER);
         LightGroup mid = new LightGroup(BaseRingEnum.MIDDLE);
@@ -314,10 +390,6 @@ public class Ring_selection_activity extends AppCompatActivity {
         lightBase.addGroup(outer);
         lightBase.addGroup(mid);
         lightBase.addGroup(inner);
-        ((TextView)findViewById(R.id.nameLbl)).setText(R.string.patternNameLbl);
-
-
+        ((TextView)findViewById(R.id.nameLbl)).setText(lightBase.getPatternName());
     }
-
-
 }

@@ -1,9 +1,6 @@
 package com.example.jduff.glowup;
 
-import android.bluetooth.*;
 import android.util.Log;
-
-import org.json.JSONStringer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,11 +16,13 @@ import java.util.ArrayList;
 public class Base implements Serializable{
     private ArrayList<LightGroup> circuit; //Store the different Light Groups that can have different patterns
     private long patternID;
+    private String patternName;
 
 
     public Base() {
         circuit = new ArrayList<>();
         patternID = -1;
+        patternName = "New Pattern";
     }
 
     /**
@@ -48,6 +47,12 @@ public class Base implements Serializable{
 
     public void setPatternID(long id) {
         patternID = id;
+    }
+
+    public String getPatternName() { return patternName;}
+
+    public void setPatternName(String name) {
+        patternName = name;
     }
 
     /**

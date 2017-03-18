@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app ="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/newMenu"
+        android:title="New"
+        android:icon="@drawable/newbase"
+        app:showAsAction="ifRoom"
+        />
     <item android:id="@+id/openMenu"
         android:title="@string/open"
         android:icon="@drawable/open"
@@ -8,7 +13,15 @@
     <item android:id="@+id/saveMenu"
         android:title="@string/save"
         android:icon="@drawable/save"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom">
+
+        <menu>
+            <item android:id="@+id/saveAs"
+                android:title="Save As"/>
+            <item android:id="@+id/saveCurrent"
+                android:title="Save"/>
+        </menu>
+    </item>
     <item android:id="@+id/deleteMenu"
         android:title="@string/delete_text"
         android:icon="@drawable/delete"
