@@ -17,4 +17,8 @@
     <string name="delete_text">Delete</string>
     <string name="sendLbl">Upload</string>
     <string name="addElementLabel">Add +</string>
+    <string name="save">Save</string>
+    <string name="open">Open</string>
+    <string name="patternLbl">Select Pattern to Open</string>
+    <string name="patternNameLbl">New Pattern</string>
 </resources>

@@ -18,10 +18,12 @@ import java.util.ArrayList;
 
 public class Base implements Serializable{
     private ArrayList<LightGroup> circuit; //Store the different Light Groups that can have different patterns
+    private long patternID;
 
 
     public Base() {
         circuit = new ArrayList<>();
+        patternID = -1;
     }
 
     /**
@@ -40,13 +42,12 @@ public class Base implements Serializable{
         circuit.remove(group);
     }
 
+    public long getPatternID() {
+        return patternID;
+    }
 
-    /**
-     * send - send the new pattern data to the Base via bluetooth
-     */
-    //TODO: Implement this. This should use the android bluetooth library to send the pattern instructions to the base
-    public void send() {
-        String data = toJSON();
+    public void setPatternID(long id) {
+        patternID = id;
     }
 
     /**
@@ -63,14 +64,6 @@ public class Base implements Serializable{
 
         str = str.substring(0,str.length() - 1) + "]}";
         return str;
-    }
-
-
-    /**
-     * save - save the current patter to the device
-     */
-    //TODO: Implement this, to save this class data to the device
-    public void save() {
     }
 
     /**

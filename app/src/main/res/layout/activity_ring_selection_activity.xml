@@ -14,10 +14,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/nameLbl"
+            android:text="@string/patternNameLbl"
+            android:textAlignment="center"
+            android:textSize="30dp"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10dp" />
 
         <Button
             android:text="Outer Ring"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
             android:id="@+id/outer_btn"
@@ -25,7 +36,7 @@
 
         <Button
             android:text="Middle Ring"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:id="@+id/mid_btn"
@@ -33,7 +44,7 @@
 
         <Button
             android:text="Inner Ring"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/mid_btn"
             android:layout_marginTop="15dp"
@@ -45,11 +56,11 @@
             android:layout_weight="1"/>
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:id="@+id/sendBtn"
             android:text="@string/sendLbl"
             android:onClick="uploadData"/>
+
     </LinearLayout>
 </RelativeLayout>
