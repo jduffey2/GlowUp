@@ -1,21 +1,44 @@
 package com.example.jduff.glowup;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.util.ArrayList;
 
 /**
  * Ring_selection_activity - the main activity that allows a user to select a ring to modify
@@ -24,13 +47,14 @@ import android.widget.TextView;
  */
 public class Ring_selection_activity extends AppCompatActivity {
 
+
     private Base lightBase;
 
     public final static String BASE = "com.example.jduff.glowup.BASE";
     public final static String RING = "com.example.jduff.glowup.RING";
-    private String m_text = "";
+        private String m_text = "";
 
-    @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ring_selection_activity);
@@ -49,6 +73,25 @@ public class Ring_selection_activity extends AppCompatActivity {
             newBase();
         }
 
+    }
+
+    //Send the data to the base
+    public void uploadData(View view) {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "http://192.168.4.1/?pattern=" + lightBase.toJSON();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //Sent to the device and received a response back - Do Nothing
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+               Log.d("ERROR","There was an error sending the request");
+            }
+        });
+        queue.add(stringRequest);
     }
 
     @Override
@@ -104,11 +147,6 @@ public class Ring_selection_activity extends AppCompatActivity {
         intent.putExtra(BASE, lightBase);
         intent.putExtra(RING, ring);
         startActivity(intent);
-    }
-
-    //Send the data to the base
-    public void uploadData(View view) {
-        Log.d("TEST",lightBase.toJSON());
     }
 
     //Functionality for saving a pattern, creates a dialog to select the name, then saves to db

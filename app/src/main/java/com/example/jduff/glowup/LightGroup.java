@@ -15,11 +15,11 @@ import java.util.ArrayList;
  * @version 1.0 - 10/2016
  */
 
-public class LightGroup implements Serializable{
+class LightGroup implements Serializable{
     private ArrayList<SequenceElement> pattern;
     private BaseRingEnum ringID;
 
-    public LightGroup(BaseRingEnum ring) {
+    LightGroup(BaseRingEnum ring) {
         pattern = new ArrayList<>();
         ringID = ring;
     }
@@ -28,16 +28,15 @@ public class LightGroup implements Serializable{
      * toJSON - convert the LightGroup object into a JSON-like string
      * @return - a JSON-like String of the LightGroup data
      */
-    public String toJSON() {
-        String str = "{" + ringID.ordinal() + ",[";
+    String toJSON() {
+        String str = "";
         //iterate through each element of the LightGroup calling the Element toJSON method
         for (SequenceElement element: pattern) {
-            str += element.toJSON() + ",";
+            str += element.toJSON() + "*";
         }
         if(pattern.size() > 0) {
             str = str.substring(0, str.length() - 1);
         }
-        str += "]}";
 
         return str;
     }
@@ -46,7 +45,7 @@ public class LightGroup implements Serializable{
      * addElement - add a new SequenceElement to the LightGroup
      * @param element - the SequenceElement to add to the LightGroup
      */
-    public void addElement(SequenceElement element) {
+    void addElement(SequenceElement element) {
         pattern.add(element);
     }
 
@@ -64,7 +63,7 @@ public class LightGroup implements Serializable{
      * removeElement - remove a SequenceElement based on its index in the pattern
      * @param index - the index of the SequenceElement to remove
      */
-    public void removeElement(int index) {
+    void removeElement(int index) {
         if(index < pattern.size()) {
             pattern.remove(index);
         }
@@ -74,7 +73,7 @@ public class LightGroup implements Serializable{
      * getPattern - a getter for the ArrayList of the SequenceElements
      * @return - the ArrayList containing the SequenceElements in the pattern
      */
-    public ArrayList<SequenceElement> getPattern() {
+    ArrayList<SequenceElement> getPattern() {
         return pattern;
     }
 
@@ -83,7 +82,7 @@ public class LightGroup implements Serializable{
      * @param index - the index of the SequenceElement to return
      * @return - the SequenceElement at the specified index
      */
-    public SequenceElement getElement(int index) {
+    SequenceElement getElement(int index) {
         return pattern.get(index);
     }
 
@@ -92,7 +91,7 @@ public class LightGroup implements Serializable{
      * @param index - the index of the Element to replace
      * @param element - the SequenceElement to replace the old one
      */
-    public void  updateElement(int index, SequenceElement element) {
+    void  updateElement(int index, SequenceElement element) {
         if(index >= pattern.size()) {
             pattern.add(index, element);
         } else {

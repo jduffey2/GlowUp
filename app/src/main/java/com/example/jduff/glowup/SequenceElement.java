@@ -1,6 +1,7 @@
 package com.example.jduff.glowup;
 
 
+import android.graphics.Point;
 import android.icu.text.SelectFormat;
 import android.util.Log;
 
@@ -17,12 +18,14 @@ import java.io.Serializable;
  *
  */
 
-public class SequenceElement implements Serializable{
+class SequenceElement implements Serializable{
     private int redComponent; //The red component of the color to display
     private int greenComponent; //The green component of the color to display
     private int blueComponent; //The blue component of the color to display
     private int length; //The length of time in milliseconds to display the color
     private int indexID; //The index for its position in the LightGroup, so that when returning it can fill in the right place
+    private int x;
+    private int y;
 
     //Constructors
 
@@ -34,31 +37,35 @@ public class SequenceElement implements Serializable{
      * @param milliseconds time in milliseconds the base should stay the specified color
      * @param index the index in the pattern that this element appears on the ring
      */
-    public SequenceElement(int red, int green, int blue, int milliseconds, int index) {
+    SequenceElement(int red, int green, int blue, int milliseconds, int index) {
         redComponent = Math.max(Math.min(red, 255), 0);
         greenComponent = Math.max(Math.min(green, 255), 0);
         blueComponent = Math.max(Math.min(blue, 255), 0);
         length = Math.max(milliseconds, 1000);
         indexID = index;
+        x = 0;
+        y = 0;
     }
 
     /**
      * Constructor for the object with default values
      * @param index the index in the pattern that this element appears on the ring
      */
-    public SequenceElement(int index) {
+    SequenceElement(int index) {
         redComponent = 0;
         greenComponent = 0;
         blueComponent = 0;
         length = 1000;
         indexID = index;
+        x = 0;
+        y = 0;
     }
 
     /**
      * get the red component of the element
      * @return integer value [0-255] of the red component
      */
-    public int getRedComponent() {
+    int getRedComponent() {
         return redComponent;
     }
 
@@ -66,7 +73,7 @@ public class SequenceElement implements Serializable{
      * get the green component of the element
      * @return integer value [0-255] of the green component
      */
-    public int getGreenComponent() {
+    int getGreenComponent() {
         return greenComponent;
     }
 
@@ -74,7 +81,7 @@ public class SequenceElement implements Serializable{
      * get the blue component of the element
      * @return integer value [0-255] of the blue component
      */
-    public int getBlueComponent() {
+    int getBlueComponent() {
         return blueComponent;
     }
 
@@ -82,14 +89,14 @@ public class SequenceElement implements Serializable{
      * get the time in milliseconds of the element
      * @return integer value length to remain this color in milliseconds
      */
-    public int getLength() { return length; }
+    int getLength() { return length; }
 
 
     /**
      * set the value of the red color component
      * @param red integer [0-255] of the red value of the color
      */
-    public void setRedComponent(int red) {
+    private void setRedComponent(int red) {
         redComponent = Math.max(Math.min(red, 255), 0);
     }
 
@@ -97,7 +104,7 @@ public class SequenceElement implements Serializable{
      * set the value of the green color component
      * @param green integer [0-255] of the green value of the color
      */
-    public void setGreenComponent(int green) {
+    private void setGreenComponent(int green) {
         greenComponent = Math.max(Math.min(green, 255), 0);
     }
 
@@ -105,7 +112,7 @@ public class SequenceElement implements Serializable{
      * set the value of the blue color component
      * @param blue integer [0-255] of the blue value of the color
      */
-    public void setBlueComponent(int blue) {
+    private void setBlueComponent(int blue) {
         blueComponent = Math.max(Math.min(blue, 255), 0);
     }
 
@@ -115,7 +122,7 @@ public class SequenceElement implements Serializable{
      * @param green integer [0-255] of the green value of the color
      * @param blue integer [0-255] of the blue value of the color
      */
-    public void setComponents(int red, int green, int blue) {
+    void setComponents(int red, int green, int blue) {
         setRedComponent(red);
         setGreenComponent(green);
         setBlueComponent(blue);
@@ -125,13 +132,13 @@ public class SequenceElement implements Serializable{
      * set the length of time in milliseconds that the ring should remain its specified color
      * @param milliseconds time in milliseconds that the ring should remain its specified color
      */
-    public void setLength(int milliseconds) {
+    void setLength(int milliseconds) {
         length = Math.max(milliseconds, 1000);
     }
 
     /**
      * Convert the color to Hex format xxxxxx
-     * @return
+     * @return the string containing the #XXXXXX format of the color chosen
      */
     public String toHex() {
         return (String.format("%02x", redComponent) + String.format("%02x", greenComponent) + String.format("%02x", blueComponent)).toUpperCase();
@@ -141,8 +148,8 @@ public class SequenceElement implements Serializable{
      * toJSON - convert the element data to a JSON-like string
      * @return a JSON-like string containing the red, green, blue, and time components
      */
-    public String toJSON() {
-        String str = "{" + redComponent + "," + greenComponent + "," + blueComponent  + "," + length + "}";
+    String toJSON() {
+        String str = "" + redComponent + "," + greenComponent + "," + blueComponent  + "," + length;
         return str;
     }
 }

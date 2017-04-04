@@ -29,7 +29,7 @@ public class Base implements Serializable{
      * addGroup - Add a LightGroup to the Base, to be used if different sized bases are used
      * @param group - a LightGroup object to be added to the base
      */
-    public void addGroup(LightGroup group) {
+    void addGroup(LightGroup group) {
         circuit.add(group);
     }
 
@@ -41,17 +41,17 @@ public class Base implements Serializable{
         circuit.remove(group);
     }
 
-    public long getPatternID() {
+    long getPatternID() {
         return patternID;
     }
 
-    public void setPatternID(long id) {
+    void setPatternID(long id) {
         patternID = id;
     }
 
-    public String getPatternName() { return patternName;}
+    String getPatternName() { return patternName;}
 
-    public void setPatternName(String name) {
+    void setPatternName(String name) {
         patternName = name;
     }
 
@@ -59,15 +59,15 @@ public class Base implements Serializable{
      * toJSON - converts the pattern data into a JSON-like structured string
      * @return - a JSON-like string containing an array of the different LightGroup data
      */
-    public String toJSON() {
-        String str = "{[";
+    String toJSON() {
+        String str = "";
 
         //Iterate through the LightGroups in the circuit and call their toJSON methods
         for (LightGroup group: circuit) {
-            str += group.toJSON() + ",";
+            str += group.toJSON() + "|";
         }
 
-        str = str.substring(0,str.length() - 1) + "]}";
+        str = str.substring(0,str.length() - 1);
         return str;
     }
 
@@ -76,7 +76,7 @@ public class Base implements Serializable{
      * @param index - the index of the LightGroup to retrieve from the ArrayList
      * @return - the LightGroup object at the selected index
      */
-    public LightGroup getGroup(int index) {
+    LightGroup getGroup(int index) {
         return circuit.get(index);
     }
 
@@ -85,7 +85,7 @@ public class Base implements Serializable{
      * @param index - the BaseRingEnum value of the LightGroup to retrieve
      * @return - the LightGroup object with the BaseRingEnum
      */
-    public LightGroup getGroup(BaseRingEnum index) {
+    LightGroup getGroup(BaseRingEnum index) {
         switch (index) {
             case OUTER:
                 return circuit.get(0); //The Outer ring is at index 0
@@ -103,7 +103,7 @@ public class Base implements Serializable{
      * @param ring - the BaseRingEnum of the LightGroup that should be updated
      * @param group - a LightGroup object that is going to replace the current LightGroup at the selected index
      */
-    public void updateGroup(BaseRingEnum ring, LightGroup group) {
+    void updateGroup(BaseRingEnum ring, LightGroup group) {
         switch (ring) {
             case OUTER:
                 circuit.set(0, group);
