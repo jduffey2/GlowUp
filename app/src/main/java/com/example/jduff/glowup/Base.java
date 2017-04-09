@@ -60,7 +60,7 @@ public class Base implements Serializable{
      * @return - a JSON-like string containing an array of the different LightGroup data
      */
     String toJSON() {
-        String str = "";
+        String str = (circuit.get(0).getPattern()).size() + "," + (circuit.get(1).getPattern()).size() + "," + (circuit.get(2).getPattern()).size() + "|" ;
 
         //Iterate through the LightGroups in the circuit and call their toJSON methods
         for (LightGroup group: circuit) {
